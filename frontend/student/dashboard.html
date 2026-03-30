@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard – Prashikshan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div id="navbar"></div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="mb-4 px-2">
+                <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Student
+                    Panel</small>
+            </div>
+            <a class="sidebar-link active" onclick="showSection('overview')">
+                <i class="fas fa-tachometer-alt"></i> Overview
+            </a>
+            <a class="sidebar-link" onclick="showSection('profile')">
+                <i class="fas fa-user"></i> My Profile
+            </a>
+            <a class="sidebar-link" onclick="showSection('assessments')">
+                <i class="fas fa-clipboard-check"></i> Assessments
+            </a>
+            <a class="sidebar-link" onclick="showSection('skillgaps')">
+                <i class="fas fa-chart-bar"></i> Skill Analysis
+            </a>
+            <a class="sidebar-link" onclick="showSection('roadmap')">
+                <i class="fas fa-road"></i> Roadmap
+            </a>
+            <a class="sidebar-link" onclick="showSection('courses')">
+                <i class="fas fa-book"></i> Courses
+            </a>
+            <a class="sidebar-link" onclick="showSection('jobs')">
+                <i class="fas fa-briefcase"></i> Opportunities
+            </a>
+            <a class="sidebar-link" onclick="showSection('applications')">
+                <i class="fas fa-paper-plane"></i> Applications
+            </a>
+            <div class="mt-4 pt-3 border-top border-secondary px-2">
+                <a class="sidebar-link" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Overview Section -->
+            <div id="section-overview" class="section-panel fade-in">
+                <h3 class="mb-1">Welcome back, <span id="userName"></span>! 👋</h3>
+                <p class="text-muted mb-4">Here's your learning progress at a glance</p>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-icon purple"><i class="fas fa-chart-line"></i></div>
+                            <div>
+                                <div class="metric-value" id="readinessScore">--</div>
+                                <div class="metric-label">Readiness Score</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-icon green"><i class="fas fa-clipboard-check"></i></div>
+                            <div>
+                                <div class="metric-value" id="totalAssessments">--</div>
+                                <div class="metric-label">Assessments</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div>
+                                <div class="metric-value" id="totalGaps">--</div>
+                                <div class="metric-label">Skill Gaps</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-icon blue"><i class="fas fa-paper-plane"></i></div>
+                            <div>
+                                <div class="metric-value" id="totalApps">--</div>
+                                <div class="metric-label">Applications</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Readiness Gauge & Skills -->
+                <div class="row g-4">
+                    <div class="col-md-5">
+                        <div class="glass-card text-center">
+                            <h5 class="mb-4">Job Readiness</h5>
+                            <div class="readiness-gauge" id="readinessGauge">
+                                <span class="readiness-value" id="gaugeValue">--%</span>
+                            </div>
+                            <p class="text-muted mt-3 mb-2" id="readinessLevel">Analyzing...</p>
+                            <button class="btn-primary-custom btn-sm-custom mt-2" onclick="runAIAnalysis()">
+                                <i class="fas fa-brain me-1"></i> Run AI Analysis
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="glass-card">
+                            <h5 class="mb-3">Skill Gaps Overview</h5>
+                            <div id="skillGapsOverview">
+                                <div class="text-center text-muted py-3">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="section-profile" class="section-panel fade-in" style="display:none;">
+                <h3 class="mb-4"><i class="fas fa-user me-2"></i>My Profile</h3>
+                <div class="glass-card" style="max-width: 700px;">
+                    <form id="profileForm">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label text-muted">Skills (comma-separated)</label>
+                                <input type="text" class="form-control" id="profileSkills"
+                                    style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);"
+                                    placeholder="JavaScript, React, Node.js">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Education</label>
+                                <input type="text" class="form-control" id="profileEducation"
+                                    style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);"
+                                    placeholder="B.Tech Computer Science - IIT Bombay">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Certifications (comma-separated)</label>
+                                <input type="text" class="form-control" id="profileCerts"
+                                    style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);"
+                                    placeholder="AWS Certified, React Developer">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Bio</label>
+                                <textarea class="form-control" id="profileBio" rows="3"
+                                    style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);"
+                                    placeholder="Tell us about yourself..."></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">GitHub URL</label>
+                                <input type="url" class="form-control" id="profileGithub"
+                                    style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">LinkedIn URL</label>
+                                <input type="url" class="form-control" id="profileLinkedin"
+                                    style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn-primary-custom">
+                                    <i class="fas fa-save me-2"></i>Save Profile
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Assessments Section -->
+            <div id="section-assessments" class="section-panel fade-in" style="display:none;">
+                <h3 class="mb-4"><i class="fas fa-clipboard-check me-2"></i>Skill Assessments</h3>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-12">
+                        <div class="glass-card">
+                            <h5 class="mb-3">Take a New Assessment</h5>
+                            <p class="text-muted mb-3">Select a category and test your skills with 10 questions</p>
+                            <div class="d-flex flex-wrap gap-2" id="categoryButtons"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz Area (hidden by default) -->
+                <div id="quizArea" class="glass-card mb-4" style="display:none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 id="quizTitle" class="mb-0">Quiz</h5>
+                        <span class="badge-custom badge-primary" id="quizProgress">1/10</span>
+                    </div>
+                    <div id="quizContent"></div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn-secondary-custom btn-sm-custom" onclick="prevQuestion()">← Previous</button>
+                        <button class="btn-primary-custom btn-sm-custom" id="nextBtn" onclick="nextQuestion()">Next
+                            →</button>
+                    </div>
+                </div>
+
+                <!-- Quiz Results -->
+                <div id="quizResults" class="glass-card mb-4" style="display:none;"></div>
+
+                <!-- History -->
+                <div class="glass-card">
+                    <h5 class="mb-3">Assessment History</h5>
+                    <div id="assessmentHistory">
+                        <div class="text-center text-muted py-3">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skill Gaps Section -->
+            <div id="section-skillgaps" class="section-panel fade-in" style="display:none;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Skill Gap Analysis</h3>
+                    <button class="btn-primary-custom btn-sm-custom" onclick="runAIAnalysis()">
+                        <i class="fas fa-brain me-1"></i> Run AI Analysis
+                    </button>
+                </div>
+                <div id="skillGapsDetail" class="row g-4"></div>
+            </div>
+
+            <!-- Roadmap Section -->
+            <div id="section-roadmap" class="section-panel fade-in" style="display:none;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0"><i class="fas fa-road me-2"></i>Learning Roadmap</h3>
+                    <button class="btn-success-custom btn-sm-custom" onclick="generateRoadmap()">
+                        <i class="fas fa-magic me-1"></i> Generate Roadmap
+                    </button>
+                </div>
+                <div id="roadmapContent">
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-road mb-3" style="font-size:3rem; opacity:0.3;"></i>
+                        <p>Click "Generate Roadmap" to get AI-powered learning recommendations</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Courses Section -->
+            <div id="section-courses" class="section-panel fade-in" style="display:none;">
+                <h3 class="mb-4"><i class="fas fa-book me-2"></i>Recommended Courses</h3>
+                <div class="row g-4" id="coursesGrid"></div>
+            </div>
+
+            <!-- Jobs Section -->
+            <div id="section-jobs" class="section-panel fade-in" style="display:none;">
+                <h3 class="mb-4"><i class="fas fa-briefcase me-2"></i>Job Opportunities</h3>
+                <div class="row g-4" id="jobsGrid"></div>
+            </div>
+
+            <!-- Applications Section -->
+            <div id="section-applications" class="section-panel fade-in" style="display:none;">
+                <h3 class="mb-4"><i class="fas fa-paper-plane me-2"></i>My Applications</h3>
+                <div id="applicationsContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        if (!requireAuth(['student'])) throw new Error('Auth required');
+        renderNavbar();
+        const user = getUser();
+        document.getElementById('userName').textContent = user.name;
+
+        // State
+        let quizQuestions = [];
+        let quizAnswers = {};
+        let currentQuestionIndex = 0;
+        let currentCategory = '';
+
+        // Section navigation
+        function showSection(name) {
+            document.querySelectorAll('.section-panel').forEach(p => p.style.display = 'none');
+            document.getElementById(`section-${name}`).style.display = 'block';
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            event.target.closest('.sidebar-link')?.classList.add('active');
+
+            // Load data based on section
+            if (name === 'overview') loadOverview();
+            if (name === 'profile') loadProfile();
+            if (name === 'assessments') loadAssessments();
+            if (name === 'skillgaps') loadSkillGaps();
+            if (name === 'courses') loadCourses();
+            if (name === 'jobs') loadJobs();
+            if (name === 'applications') loadApplications();
+        }
+
+        // Load Overview
+        async function loadOverview() {
+            try {
+                const [profile, gaps, apps, history] = await Promise.all([
+                    apiGet('/students/profile'),
+                    apiGet('/students/skill-gaps'),
+                    apiGet('/students/applications'),
+                    apiGet('/assessments/history'),
+                ]);
+
+                const score = profile.profile.readiness_score || 0;
+                document.getElementById('readinessScore').textContent = score + '%';
+                document.getElementById('totalAssessments').textContent = history.assessments.length;
+                document.getElementById('totalGaps').textContent = gaps.skillGaps.length;
+                document.getElementById('totalApps').textContent = apps.applications.length;
+
+                // Update gauge
+                const gauge = document.getElementById('readinessGauge');
+                gauge.style.setProperty('--readiness', score + '%');
+                document.getElementById('gaugeValue').textContent = score + '%';
+
+                const level = score >= 80 ? 'Excellent' : score >= 65 ? 'Good' : score >= 45 ? 'Developing' : 'Needs Work';
+                document.getElementById('readinessLevel').textContent = level;
+
+                // Skill gaps overview
+                const gapsHtml = gaps.skillGaps.slice(0, 5).map(g => `
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small>${g.skill_name}</small>
+                            <small>${g.current_level}% / ${g.required_level}%</small>
+                        </div>
+                        <div class="progress-custom">
+                            <div class="progress-bar ${g.priority === 'high' ? 'orange' : g.priority === 'low' ? 'green' : ''}" 
+                                 style="width: ${g.current_level}%"></div>
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('skillGapsOverview').innerHTML = gapsHtml || '<p class="text-muted text-center">Take an assessment to see skill gaps</p>';
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Load Profile
+        async function loadProfile() {
+            try {
+                const data = await apiGet('/students/profile');
+                const p = data.profile;
+                document.getElementById('profileSkills').value = (p.skills || []).join(', ');
+                document.getElementById('profileEducation').value = p.education || '';
+                document.getElementById('profileCerts').value = (p.certifications || []).join(', ');
+                document.getElementById('profileBio').value = p.bio || '';
+                document.getElementById('profileGithub').value = p.github_url || '';
+                document.getElementById('profileLinkedin').value = p.linkedin_url || '';
+            } catch (err) { console.error(err); }
+        }
+
+        // Save Profile
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await apiPut('/students/profile', {
+                    skills: document.getElementById('profileSkills').value.split(',').map(s => s.trim()).filter(Boolean),
+                    education: document.getElementById('profileEducation').value,
+                    certifications: document.getElementById('profileCerts').value.split(',').map(s => s.trim()).filter(Boolean),
+                    bio: document.getElementById('profileBio').value,
+                    github_url: document.getElementById('profileGithub').value,
+                    linkedin_url: document.getElementById('profileLinkedin').value,
+                });
+                showToast('Profile updated!', 'success');
+            } catch (err) { showToast(err.message, 'error'); }
+        });
+
+        // Load Assessments
+        async function loadAssessments() {
+            try {
+                const [cats, history] = await Promise.all([
+                    apiGet('/assessments/categories'),
+                    apiGet('/assessments/history'),
+                ]);
+
+                document.getElementById('categoryButtons').innerHTML = cats.categories.map(c => `
+                    <button class="btn-secondary-custom btn-sm-custom" onclick="startQuiz('${c}')">
+                        <i class="fas fa-play me-1"></i>${c}
+                    </button>
+                `).join('');
+
+                document.getElementById('assessmentHistory').innerHTML = history.assessments.length > 0
+                    ? `<table class="table-custom"><thead><tr>
+                        <th>Assessment</th><th>Category</th><th>Score</th><th>Date</th>
+                    </tr></thead><tbody>${history.assessments.map(a => `
+                        <tr>
+                            <td>${a.title}</td>
+                            <td><span class="skill-tag">${a.category}</span></td>
+                            <td><strong>${a.score}/${a.max_score}</strong> (${Math.round(a.score / a.max_score * 100)}%)</td>
+                            <td>${formatDate(a.created_at)}</td>
+                        </tr>
+                    `).join('')}</tbody></table>`
+                    : '<p class="text-muted text-center">No assessments taken yet</p>';
+            } catch (err) { console.error(err); }
+        }
+
+        // Quiz Functions
+        async function startQuiz(category) {
+            try {
+                currentCategory = category;
+                const data = await apiGet(`/assessments/questions?category=${category}`);
+                quizQuestions = data.questions;
+                quizAnswers = {};
+                currentQuestionIndex = 0;
+                document.getElementById('quizArea').style.display = 'block';
+                document.getElementById('quizResults').style.display = 'none';
+                document.getElementById('quizTitle').textContent = `${category} Assessment`;
+                renderQuestion();
+            } catch (err) { showToast(err.message, 'error'); }
+        }
+
+        function renderQuestion() {
+            const q = quizQuestions[currentQuestionIndex];
+            const letters = ['A', 'B', 'C', 'D'];
+            document.getElementById('quizProgress').textContent = `${currentQuestionIndex + 1}/${quizQuestions.length}`;
+            document.getElementById('quizContent').innerHTML = `
+                <h6 class="mb-3">Q${currentQuestionIndex + 1}. ${q.question}</h6>
+                ${q.options.map((opt, i) => `
+                    <div class="quiz-option ${quizAnswers[q.id] === i ? 'selected' : ''}" onclick="selectAnswer(${q.id}, ${i})">
+                        <span class="option-letter">${letters[i]}</span>
+                        <span>${opt}</span>
+                    </div>
+                `).join('')}
+            `;
+            document.getElementById('nextBtn').textContent = currentQuestionIndex === quizQuestions.length - 1 ? 'Submit ✓' : 'Next →';
+        }
+
+        function selectAnswer(qId, optIndex) {
+            quizAnswers[qId] = optIndex;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                submitQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        async function submitQuiz() {
+            try {
+                showLoading();
+                const data = await apiPost('/assessments/submit', {
+                    category: currentCategory,
+                    answers: quizAnswers,
+                });
+                hideLoading();
+
+                document.getElementById('quizArea').style.display = 'none';
+                document.getElementById('quizResults').style.display = 'block';
+                document.getElementById('quizResults').innerHTML = `
+                    <div class="text-center mb-4">
+                        <h4>Assessment Complete!</h4>
+                        <div class="readiness-gauge mx-auto my-3" style="width:140px; height:140px; --readiness:${data.percentage}%">
+                            <span class="readiness-value" style="font-size:1.8rem;">${data.percentage}%</span>
+                        </div>
+                        <p class="text-muted">Score: ${data.score} / ${data.maxScore}</p>
+                    </div>
+                    <h6 class="mb-3">Detailed Results:</h6>
+                    ${data.results.map((r, i) => `
+                        <div class="quiz-option ${r.isCorrect ? 'correct' : 'wrong'}" style="cursor:default;">
+                            <span class="option-letter">${r.isCorrect ? '✓' : '✗'}</span>
+                            <span>Q${i + 1}: ${r.question} — <small class="text-muted">Your answer: ${quizQuestions[i].options[r.userAnswer] || 'None'}</small></span>
+                        </div>
+                    `).join('')}
+                `;
+                loadAssessments();
+                showToast(`Assessment completed! Score: ${data.percentage}%`, 'success');
+            } catch (err) {
+                hideLoading();
+                showToast(err.message, 'error');
+            }
+        }
+
+        // Load Skill Gaps
+        async function loadSkillGaps() {
+            try {
+                const data = await apiGet('/students/skill-gaps');
+                document.getElementById('skillGapsDetail').innerHTML = data.skillGaps.length > 0
+                    ? data.skillGaps.map(g => `
+                        <div class="col-md-6">
+                            <div class="glass-card">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">${g.skill_name}</h6>
+                                    ${getPriorityBadge(g.priority)}
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small class="text-muted">Current Level</small>
+                                    <small>${g.current_level}%</small>
+                                </div>
+                                <div class="progress-custom mb-2">
+                                    <div class="progress-bar ${g.priority === 'high' ? 'orange' : 'green'}" style="width:${g.current_level}%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">Required: ${g.required_level}%</small>
+                                    <small class="text-warning">Gap: ${g.gap_score}</small>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')
+                    : '<div class="col-12"><div class="empty-state"><i class="fas fa-chart-bar"></i><p>No skill gaps found. Take assessments to analyze your skills.</p></div></div>';
+            } catch (err) { console.error(err); }
+        }
+
+        // AI Analysis
+        async function runAIAnalysis() {
+            try {
+                showLoading();
+                await apiPost('/ai/analyze');
+                await apiPost('/ai/recommend');
+                const readiness = await apiGet(`/ai/readiness/${user.id}`);
+                hideLoading();
+                showToast(`AI Analysis complete! Readiness: ${readiness.readinessScore}%`, 'success');
+                loadOverview();
+            } catch (err) {
+                hideLoading();
+                showToast(err.message, 'error');
+            }
+        }
+
+        // Generate Roadmap
+        async function generateRoadmap() {
+            try {
+                showLoading();
+                const data = await apiPost('/ai/generate-roadmap');
+                hideLoading();
+
+                let html = '';
+                if (data.readiness) {
+                    html += `<div class="glass-card mb-4">
+                        <h5>📊 Your Readiness: ${data.readiness.readinessScore}% (${data.readiness.readinessLevel})</h5>
+                        <p class="text-muted">${data.readiness.readinessMessage}</p>
+                    </div>`;
+                }
+
+                if (data.milestones && data.milestones.length > 0) {
+                    html += `<div class="glass-card mb-4"><h5>🎯 Milestones</h5>`;
+                    data.milestones.forEach(m => {
+                        html += `<div class="workflow-step">
+                            <div class="step-number" style="width:40px;height:40px;font-size:0.85rem;">W${m.week}</div>
+                            <div class="step-content">
+                                <h6 class="mb-0">${m.title}</h6>
+                                <small class="text-muted">${m.skill} • ${m.difficulty}</small>
+                            </div>
+                        </div>`;
+                    });
+                    html += '</div>';
+                }
+
+                if (data.recommendations && data.recommendations.length > 0) {
+                    html += `<div class="glass-card"><h5>📚 Recommended Courses</h5><div class="row g-3 mt-2">`;
+                    data.recommendations.forEach(r => {
+                        html += `<div class="col-md-6">
+                            <div class="glass-card" style="padding:16px;">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <strong>${r.course.title}</strong>
+                                    <span class="badge-custom badge-primary">${r.relevance_score}%</span>
+                                </div>
+                                <small class="text-muted d-block mb-2">${r.course.provider} • ${r.course.duration}</small>
+                                <small class="text-warning">${r.reason}</small>
+                            </div>
+                        </div>`;
+                    });
+                    html += '</div></div>';
+                }
+
+                document.getElementById('roadmapContent').innerHTML = html;
+                showToast('Roadmap generated!', 'success');
+            } catch (err) {
+                hideLoading();
+                showToast(err.message, 'error');
+            }
+        }
+
+        // Load Courses
+        async function loadCourses() {
+            try {
+                const data = await apiGet('/students/courses');
+                document.getElementById('coursesGrid').innerHTML = data.courses.map(c => `
+                    <div class="col-md-4">
+                        <div class="glass-card h-100">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="skill-tag">${c.skill_area}</span>
+                                <span class="badge-custom badge-${c.difficulty === 'beginner' ? 'success' : c.difficulty === 'intermediate' ? 'warning' : 'danger'}">${c.difficulty}</span>
+                            </div>
+                            <h6 class="mb-1">${c.title}</h6>
+                            <small class="text-muted d-block mb-2">${c.provider} • ${c.duration}</small>
+                            <p class="text-muted small mb-2">${c.description}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-warning small">⭐ ${c.rating}/5</span>
+                                <a href="${c.url}" target="_blank" class="btn-primary-custom btn-sm-custom" style="padding:6px 16px;font-size:0.8rem;">View Course</a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        // Load Jobs
+        async function loadJobs() {
+            try {
+                const data = await apiGet('/students/jobs');
+                document.getElementById('jobsGrid').innerHTML = data.jobs.map(j => `
+                    <div class="col-md-6">
+                        <div class="glass-card">
+                            <div class="d-flex justify-content-between mb-2">
+                                <h6 class="mb-0">${j.title}</h6>
+                                <span class="badge-custom badge-${j.job_type === 'internship' ? 'info' : 'success'}">${j.job_type}</span>
+                            </div>
+                            <p class="text-primary mb-1"><i class="fas fa-building me-1"></i>${j.organization || j.company_name}</p>
+                            <p class="text-muted small mb-2">${j.description}</p>
+                            <div class="mb-2">${renderSkillTags(j.skills_required)}</div>
+                            <div class="d-flex justify-content-between align-items-center text-muted small">
+                                <span><i class="fas fa-map-marker-alt me-1"></i>${j.location}</span>
+                                <span>${j.salary_range}</span>
+                            </div>
+                            <button class="btn-primary-custom btn-sm-custom w-100 mt-3" onclick="applyJob(${j.id})">
+                                <i class="fas fa-paper-plane me-1"></i>Apply Now
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        // Apply for Job
+        async function applyJob(jobId) {
+            try {
+                await apiPost('/students/applications', { job_id: jobId });
+                showToast('Application submitted!', 'success');
+                loadJobs();
+            } catch (err) { showToast(err.message, 'error'); }
+        }
+
+        // Load Applications
+        async function loadApplications() {
+            try {
+                const data = await apiGet('/students/applications');
+                document.getElementById('applicationsContent').innerHTML = data.applications.length > 0
+                    ? `<table class="table-custom"><thead><tr>
+                        <th>Position</th><th>Company</th><th>Type</th><th>Status</th><th>Applied</th>
+                    </tr></thead><tbody>${data.applications.map(a => `
+                        <tr>
+                            <td><strong>${a.job_title}</strong></td>
+                            <td>${a.organization || a.company_name}</td>
+                            <td>${a.job_type}</td>
+                            <td>${getStatusBadge(a.status)}</td>
+                            <td>${formatDate(a.applied_at)}</td>
+                        </tr>
+                    `).join('')}</tbody></table>`
+                    : '<div class="empty-state"><i class="fas fa-paper-plane"></i><p>No applications yet. Browse opportunities and apply!</p></div>';
+            } catch (err) { console.error(err); }
+        }
+
+        // Initial load
+        loadOverview();
+    </script>
+</body>
+
+</html>

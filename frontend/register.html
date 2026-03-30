@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register – Prashikshan</title>
+    <meta name="description" content="Create your Prashikshan account and start your journey to become job-ready.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <section class="d-flex align-items-center justify-content-center" style="min-height: 100vh; padding-top: 90px; padding-bottom: 40px;">
+        <div class="container">
+            <div class="form-custom fade-in" style="max-width: 520px;">
+                <div class="text-center mb-4">
+                    <h2 style="background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Create Account</h2>
+                    <p class="text-muted">Join Prashikshan and start your journey</p>
+                </div>
+
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" placeholder="you@example.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="Min 6 characters" minlength="6" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="role" class="form-label">I am a</label>
+                        <select class="form-select" id="role" required>
+                            <option value="">Select your role</option>
+                            <option value="student">🎓 Student</option>
+                            <option value="institute">🏫 Institute</option>
+                            <option value="industry">🏢 Industry Partner</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4" id="orgField" style="display: none;">
+                        <label for="organization" class="form-label">Organization Name</label>
+                        <input type="text" class="form-control" id="organization" placeholder="Enter organization name">
+                    </div>
+
+                    <button type="submit" class="btn-primary-custom w-100 mb-3" id="registerBtn">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </button>
+
+                    <p class="text-center text-muted small">
+                        Already have an account? <a href="/login.html">Sign in</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        renderNavbar('register');
+
+        document.getElementById('role').addEventListener('change', (e) => {
+            const orgField = document.getElementById('orgField');
+            orgField.style.display = ['institute', 'industry'].includes(e.target.value) ? 'block' : 'none';
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('registerBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner-border spinner-border-sm me-2"></div>Creating account...';
+
+            try {
+                const data = await apiPost('/auth/register', {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value,
+                    role: document.getElementById('role').value,
+                    organization: document.getElementById('organization').value,
+                });
+
+                setToken(data.token);
+                setUser(data.user);
+                showToast('Account created successfully!', 'success');
+
+                setTimeout(() => {
+                    window.location.href = `/${data.user.role}/dashboard.html`;
+                }, 500);
+            } catch (err) {
+                showToast(err.message || 'Registration failed', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Create Account';
+            }
+        });
+    </script>
+</body>
+</html>

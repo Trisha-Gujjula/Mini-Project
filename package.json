@@ -1,0 +1,25 @@
+{
+  "name": "prashikshan",
+  "version": "1.0.0",
+  "description": "Prashikshan – AI-Driven Academia-Industry Interface Platform",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "seed": "node database/seed.js"
+  },
+  "keywords": ["education", "ai", "placement", "skill-gap"],
+  "author": "Tanishka Devgirkar, Trisha Gujjula, Veenit Ramteke",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "sql.js": "^1.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industry Dashboard – Prashikshan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="mb-4 px-2">
+                <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Industry Panel</small>
+            </div>
+            <a class="sidebar-link active" onclick="showSection('overview')">
+                <i class="fas fa-tachometer-alt"></i> Overview
+            </a>
+            <a class="sidebar-link" onclick="showSection('jobs')">
+                <i class="fas fa-briefcase"></i> Job Postings
+            </a>
+            <a class="sidebar-link" onclick="showSection('candidates')">
+                <i class="fas fa-users"></i> Candidates
+            </a>
+            <a class="sidebar-link" onclick="showSection('applications')">
+                <i class="fas fa-file-alt"></i> Applications
+            </a>
+            <div class="mt-4 pt-3 border-top border-secondary px-2">
+                <a class="sidebar-link" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Overview -->
+            <div id="section-overview" class="section-panel fade-in">
+                <h3 class="mb-1">Industry Dashboard 🏢</h3>
+                <p class="text-muted mb-4" id="orgName"></p>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-icon purple"><i class="fas fa-briefcase"></i></div>
+                            <div>
+                                <div class="metric-value" id="statJobs">--</div>
+                                <div class="metric-label">Total Jobs</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-icon green"><i class="fas fa-check-circle"></i></div>
+                            <div>
+                                <div class="metric-value" id="statActive">--</div>
+                                <div class="metric-label">Active Jobs</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-icon orange"><i class="fas fa-file-alt"></i></div>
+                            <div>
+                                <div class="metric-value" id="statApps">--</div>
+                                <div class="metric-label">Applications</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-icon blue"><i class="fas fa-user-check"></i></div>
+                            <div>
+                                <div class="metric-value" id="statSelected">--</div>
+                                <div class="metric-label">Selected</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <h5 class="mb-3">Quick Actions</h5>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <button class="btn-primary-custom" onclick="showSection('jobs'); setTimeout(()=>document.getElementById('jobModal').style.display='block', 100);">
+                            <i class="fas fa-plus me-1"></i>Post New Job
+                        </button>
+                        <button class="btn-secondary-custom" onclick="showSection('candidates')">
+                            <i class="fas fa-search me-1"></i>Find Candidates
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs -->
+            <div id="section-jobs" class="section-panel fade-in" style="display:none;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0"><i class="fas fa-briefcase me-2"></i>Job Postings</h3>
+                    <button class="btn-primary-custom btn-sm-custom" onclick="document.getElementById('jobModal').style.display='block';">
+                        <i class="fas fa-plus me-1"></i>Post Job
+                    </button>
+                </div>
+                <div class="row g-4" id="jobsList"></div>
+            </div>
+
+            <!-- Candidates -->
+            <div id="section-candidates" class="section-panel fade-in" style="display:none;">
+                <h3 class="mb-4"><i class="fas fa-users me-2"></i>Find Candidates</h3>
+                <div class="glass-card mb-4">
+                    <p class="text-muted mb-2">Select a job to find matching candidates:</p>
+                    <select class="form-select" id="jobSelector" onchange="loadCandidates()" style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary); max-width:400px;">
+                        <option value="">Select a job posting</option>
+                    </select>
+                </div>
+                <div id="candidatesList"></div>
+            </div>
+
+            <!-- Applications -->
+            <div id="section-applications" class="section-panel fade-in" style="display:none;">
+                <h3 class="mb-4"><i class="fas fa-file-alt me-2"></i>Applications</h3>
+                <div class="glass-card mb-4">
+                    <p class="text-muted mb-2">Select a job to view applications:</p>
+                    <select class="form-select" id="appJobSelector" onchange="loadApplications()" style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary); max-width:400px;">
+                        <option value="">Select a job posting</option>
+                    </select>
+                </div>
+                <div id="applicationsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Job Modal -->
+    <div class="modal modal-custom" id="jobModal" tabindex="-1" style="display:none; background:rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Post New Job</h5>
+                    <button type="button" class="btn-close" onclick="document.getElementById('jobModal').style.display='none';"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="jobForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Job Title</label>
+                                <input type="text" class="form-control" id="jobTitle" style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Job Type</label>
+                                <select class="form-select" id="jobType" style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);">
+                                    <option value="full-time">Full-time</option>
+                                    <option value="internship">Internship</option>
+                                    <option value="part-time">Part-time</option>
+                                    <option value="contract">Contract</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Description</label>
+                                <textarea class="form-control" id="jobDesc" rows="3" style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Requirements</label>
+                                <input type="text" class="form-control" id="jobRequirements" style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Required Skills (comma-separated)</label>
+                                <input type="text" class="form-control" id="jobSkills" style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);" placeholder="JavaScript, React, Node.js">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Location</label>
+                                <input type="text" class="form-control" id="jobLocation" style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Salary Range</label>
+                                <input type="text" class="form-control" id="jobSalary" style="background:var(--dark-surface);border-color:var(--glass-border);color:var(--text-primary);" placeholder="₹6-10 LPA">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary-custom btn-sm-custom" onclick="document.getElementById('jobModal').style.display='none';">Cancel</button>
+                    <button class="btn-primary-custom btn-sm-custom" onclick="postJob()">Post Job</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        if (!requireAuth(['industry'])) throw new Error('Auth required');
+        renderNavbar();
+        const user = getUser();
+        document.getElementById('orgName').textContent = user.organization || 'Industry Partner';
+
+        let allJobs = [];
+
+        function showSection(name) {
+            document.querySelectorAll('.section-panel').forEach(p => p.style.display = 'none');
+            document.getElementById(`section-${name}`).style.display = 'block';
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            event.target.closest('.sidebar-link')?.classList.add('active');
+            if (name === 'overview') loadOverview();
+            if (name === 'jobs') loadJobs();
+            if (name === 'candidates') { loadJobs(); populateJobSelectors(); }
+            if (name === 'applications') { loadJobs(); populateJobSelectors(); }
+        }
+
+        async function loadOverview() {
+            try {
+                const data = await apiGet('/industry/stats');
+                const s = data.stats;
+                document.getElementById('statJobs').textContent = s.totalJobs;
+                document.getElementById('statActive').textContent = s.activeJobs;
+                document.getElementById('statApps').textContent = s.totalApplications;
+                document.getElementById('statSelected').textContent = s.selectedCandidates;
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadJobs() {
+            try {
+                const data = await apiGet('/industry/jobs');
+                allJobs = data.jobs;
+                document.getElementById('jobsList').innerHTML = data.jobs.length > 0
+                    ? data.jobs.map(j => `
+                        <div class="col-md-6">
+                            <div class="glass-card">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <h6 class="mb-0">${j.title}</h6>
+                                    ${getStatusBadge(j.status)}
+                                </div>
+                                <div class="mb-2">${renderSkillTags(j.skills_required)}</div>
+                                <p class="text-muted small mb-2">${j.description || 'No description'}</p>
+                                <div class="d-flex justify-content-between align-items-center text-muted small">
+                                    <span><i class="fas fa-map-marker-alt me-1"></i>${j.location || 'Remote'}</span>
+                                    <span>${j.salary_range || 'Not specified'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-secondary">
+                                    <span class="text-muted small"><i class="fas fa-users me-1"></i>${j.applications_count} applications</span>
+                                    <div class="d-flex gap-2">
+                                        ${j.status === 'active' ? `<button class="btn-danger-custom btn-sm-custom" style="padding:4px 12px;font-size:0.75rem;" onclick="updateJob(${j.id}, 'closed')">Close</button>` : ''}
+                                        ${j.status === 'closed' ? `<button class="btn-success-custom btn-sm-custom" style="padding:4px 12px;font-size:0.75rem;" onclick="updateJob(${j.id}, 'active')">Reopen</button>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')
+                    : '<div class="col-12"><div class="empty-state"><i class="fas fa-briefcase"></i><p>No job postings yet</p></div></div>';
+                populateJobSelectors();
+            } catch (err) { console.error(err); }
+        }
+
+        function populateJobSelectors() {
+            const options = '<option value="">Select a job posting</option>' +
+                allJobs.map(j => `<option value="${j.id}">${j.title} (${j.status})</option>`).join('');
+            const sel1 = document.getElementById('jobSelector');
+            const sel2 = document.getElementById('appJobSelector');
+            if (sel1) sel1.innerHTML = options;
+            if (sel2) sel2.innerHTML = options;
+        }
+
+        async function postJob() {
+            try {
+                await apiPost('/industry/jobs', {
+                    title: document.getElementById('jobTitle').value,
+                    description: document.getElementById('jobDesc').value,
+                    requirements: document.getElementById('jobRequirements').value,
+                    skills_required: document.getElementById('jobSkills').value.split(',').map(s => s.trim()).filter(Boolean),
+                    location: document.getElementById('jobLocation').value,
+                    job_type: document.getElementById('jobType').value,
+                    salary_range: document.getElementById('jobSalary').value,
+                });
+                document.getElementById('jobModal').style.display = 'none';
+                showToast('Job posted!', 'success');
+                loadJobs();
+            } catch (err) { showToast(err.message, 'error'); }
+        }
+
+        async function updateJob(jobId, status) {
+            try {
+                await apiPut(`/industry/jobs/${jobId}`, { status });
+                showToast(`Job ${status}!`, 'success');
+                loadJobs();
+            } catch (err) { showToast(err.message, 'error'); }
+        }
+
+        async function loadCandidates() {
+            const jobId = document.getElementById('jobSelector').value;
+            if (!jobId) { document.getElementById('candidatesList').innerHTML = ''; return; }
+
+            try {
+                const data = await apiGet(`/industry/candidates/${jobId}`);
+                document.getElementById('candidatesList').innerHTML = data.candidates.length > 0
+                    ? `<div class="row g-3">${data.candidates.map(c => `
+                        <div class="col-md-4">
+                            <div class="glass-card">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <h6 class="mb-0">${c.name}</h6>
+                                    <span class="badge-custom badge-primary">${c.matchScore}% match</span>
+                                </div>
+                                <small class="text-muted d-block mb-2">${c.email}</small>
+                                <div class="mb-2">
+                                    <small class="text-muted">Matched Skills:</small><br>
+                                    ${renderSkillTags(c.matchedSkills)}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge-custom badge-success">Readiness: ${c.readiness_score}%</span>
+                                    <small class="text-muted">Avg: ${c.avg_score || 'N/A'}%</small>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}</div>`
+                    : '<div class="empty-state"><i class="fas fa-users"></i><p>No matching candidates found</p></div>';
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadApplications() {
+            const jobId = document.getElementById('appJobSelector').value;
+            if (!jobId) { document.getElementById('applicationsList').innerHTML = ''; return; }
+
+            try {
+                const data = await apiGet(`/industry/applications/${jobId}`);
+                document.getElementById('applicationsList').innerHTML = data.applications.length > 0
+                    ? `<table class="table-custom">
+                        <thead><tr>
+                            <th>Student</th><th>Skills</th><th>Readiness</th><th>Status</th><th>Actions</th>
+                        </tr></thead>
+                        <tbody>${data.applications.map(a => `
+                            <tr>
+                                <td><strong>${a.student_name}</strong><br><small class="text-muted">${a.student_email}</small></td>
+                                <td>${renderSkillTags(a.skills.slice(0, 3))}</td>
+                                <td>${a.readiness_score}%</td>
+                                <td>${getStatusBadge(a.status)}</td>
+                                <td>
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        ${a.status !== 'shortlisted' ? `<button class="btn btn-sm btn-outline-info" onclick="updateAppStatus(${a.id}, 'shortlisted')">Shortlist</button>` : ''}
+                                        ${a.status !== 'interview' ? `<button class="btn btn-sm btn-outline-primary" onclick="updateAppStatus(${a.id}, 'interview')">Interview</button>` : ''}
+                                        ${a.status !== 'selected' ? `<button class="btn btn-sm btn-outline-success" onclick="updateAppStatus(${a.id}, 'selected')">Select</button>` : ''}
+                                        ${a.status !== 'rejected' ? `<button class="btn btn-sm btn-outline-danger" onclick="updateAppStatus(${a.id}, 'rejected')">Reject</button>` : ''}
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>`
+                    : '<div class="empty-state"><i class="fas fa-file-alt"></i><p>No applications for this job</p></div>';
+            } catch (err) { console.error(err); }
+        }
+
+        async function updateAppStatus(appId, status) {
+            try {
+                await apiPut(`/industry/applications/${appId}`, { status });
+                showToast(`Application ${status}!`, 'success');
+                loadApplications();
+            } catch (err) { showToast(err.message, 'error'); }
+        }
+
+        loadOverview();
+    </script>
+</body>
+</html>
