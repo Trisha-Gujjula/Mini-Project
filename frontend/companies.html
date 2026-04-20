@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Companies Overview – Prashikshan</title>
+    <meta name="description"
+        content="Explore top companies that recruit from our campus — company profiles, what they do, LinkedIn links, and more.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .companies-hero {
+            padding: 120px 0 60px;
+            background:
+                radial-gradient(ellipse at 30% 40%, rgba(99, 102, 241, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 60%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+                var(--dark);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1.5px solid var(--glass-border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(99, 102, 241, 0.18);
+            border-color: var(--primary);
+            color: var(--primary-light);
+        }
+
+        .search-bar {
+            background: var(--dark-surface) !important;
+            border: 1.5px solid var(--glass-border) !important;
+            color: var(--text-primary) !important;
+            border-radius: 50px !important;
+            padding: 12px 24px !important;
+        }
+
+        .search-bar::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-bar:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+            outline: none !important;
+        }
+
+        .company-domain {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 3px 10px;
+            border-radius: 50px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="navbar"></div>
+
+    <!-- Hero -->
+    <section class="companies-hero">
+        <div class="container">
+            <div class="text-center mb-4 fade-in">
+                <div class="badge-custom badge-primary mb-3"><i class="fas fa-building"></i> Placement Partners</div>
+                <h1 class="hero-title" style="font-size:2.8rem;">Companies That <span>Hire From Us</span></h1>
+                <p class="section-subtitle mx-auto mb-4">Explore our placement partners — their domain, what they do,
+                    and how to connect with them. All companies recruit directly from our campus through Prashikshan.
+                </p>
+                <!-- Search -->
+                <div class="d-flex justify-content-center">
+                    <input type="text" id="companySearch" class="form-control search-bar"
+                        placeholder="🔍  Search companies by name or domain..." style="max-width:460px;"
+                        oninput="filterCompanies()">
+                </div>
+            </div>
+            <!-- Filters -->
+            <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+                <button class="filter-btn active" onclick="filterByDomain('all', this)">All</button>
+                <button class="filter-btn" onclick="filterByDomain('IT', this)">IT & Software</button>
+                <button class="filter-btn" onclick="filterByDomain('Finance', this)">Finance</button>
+                <button class="filter-btn" onclick="filterByDomain('Consulting', this)">Consulting</button>
+                <button class="filter-btn" onclick="filterByDomain('Product', this)">Product</button>
+                <button class="filter-btn" onclick="filterByDomain('Manufacturing', this)">Manufacturing</button>
+                <button class="filter-btn" onclick="filterByDomain('Analytics', this)">Analytics</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Companies Grid -->
+    <section style="padding: 60px 0 100px;">
+        <div class="container">
+            <div id="companiesGrid" class="row g-4">
+                <!-- Cards injected by JS -->
+            </div>
+            <div id="noResults" class="hidden text-center py-5">
+                <i class="fas fa-search"
+                    style="font-size:3rem; color:var(--text-muted); opacity:0.3; display:block; margin-bottom:16px;"></i>
+                <p style="color:var(--text-muted);">No companies found matching your search.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section style="padding: 0 0 80px;">
+        <div class="container">
+            <div class="glass-card text-center"
+                style="padding:60px 40px; background:linear-gradient(135deg, rgba(99,102,241,0.12), rgba(6,182,212,0.08));">
+                <h3 style="color:var(--text-primary);">Want Your Company Listed?</h3>
+                <p style="color:var(--text-secondary); max-width:450px; margin: 12px auto 28px;">Partner with us to post
+                    job openings and recruit skilled, AI-assessed students directly from campus.</p>
+                <a href="/login.html" class="btn-primary-custom">
+                    <i class="fas fa-handshake me-2"></i>Partner With Us
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <span
+                    style="font-family:'Outfit',sans-serif; font-size:1.2rem; font-weight:800; background:var(--gradient-1); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">🎓
+                    Prashikshan</span>
+                <div class="d-flex gap-4">
+                    <a href="/" style="color:var(--text-muted); font-size:0.88rem;">Home</a>
+                    <a href="/login.html" style="color:var(--text-muted); font-size:0.88rem;">Login</a>
+                    <a href="/register.html" style="color:var(--text-muted); font-size:0.88rem;">Register</a>
+                </div>
+            </div>
+            <hr style="border-color:var(--glass-border); margin:24px 0;">
+            <p style="color:var(--text-muted); font-size:0.82rem; text-align:center; margin:0;">© 2026 Prashikshan. All
+                rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        renderNavbar('companies');
+
+        const COMPANIES = [
+            {
+                name: "Tata Consultancy Services",
+                shortName: "TCS",
+                emoji: "🏢",
+                domain: "IT",
+                domainColor: "#6366f1",
+                type: "MNC",
+                typeColor: "#4f46e5",
+                founded: "1968",
+                hq: "Mumbai, India",
+                description: "India's largest IT services company. TCS delivers a broad range of information technology–related products and services including application development, business process services, consulting, IT infrastructure, testing and cybersecurity.",
+                roles: ["Software Engineer", "Business Analyst", "Systems Analyst"],
+                package: "₹3.5 – 7 LPA",
+                linkedin: "https://www.linkedin.com/company/tata-consultancy-services/",
+                website: "https://www.tcs.com",
+                rating: 4.1,
+            },
+            {
+                name: "Infosys Limited",
+                shortName: "Infosys",
+                emoji: "💡",
+                domain: "IT",
+                domainColor: "#6366f1",
+                type: "MNC",
+                typeColor: "#4f46e5",
+                founded: "1981",
+                hq: "Bengaluru, India",
+                description: "A global leader in next-generation digital services and consulting. Infosys helps companies navigate their digital transformation by delivering services in cloud, data analytics, AI, and enterprise applications.",
+                roles: ["Systems Engineer", "Technology Analyst", "Digital Specialist"],
+                package: "₹3.6 – 10 LPA",
+                linkedin: "https://www.linkedin.com/company/infosys/",
+                website: "https://www.infosys.com",
+                rating: 4.0,
+            },
+            {
+                name: "Wipro Technologies",
+                shortName: "Wipro",
+                emoji: "🌐",
+                domain: "IT",
+                domainColor: "#6366f1",
+                type: "MNC",
+                typeColor: "#4f46e5",
+                founded: "1945",
+                hq: "Bengaluru, India",
+                description: "A leading technology services and consulting company focused on building innovative solutions that address clients' most complex digital transformation needs. Leverages its holistic portfolio of capabilities in consulting, design, engineering, and operations.",
+                roles: ["Project Engineer", "Software Developer", "QA Engineer"],
+                package: "₹3.5 – 6.5 LPA",
+                linkedin: "https://www.linkedin.com/company/wipro/",
+                website: "https://www.wipro.com",
+                rating: 3.9,
+            },
+            {
+                name: "Cognizant",
+                shortName: "CTSH",
+                emoji: "🔷",
+                domain: "Consulting",
+                domainColor: "#06b6d4",
+                type: "MNC",
+                typeColor: "#4f46e5",
+                founded: "1994",
+                hq: "Teaneck, USA",
+                description: "One of the world's leading professional services companies, transforming clients' business, operating, and technology models for the digital era. Cognizant's unique industry-based, consultative approach helps clients envision, build, and run more innovative businesses.",
+                roles: ["Programmer Analyst", "Associate", "Business Analyst"],
+                package: "₹4 – 8 LPA",
+                linkedin: "https://www.linkedin.com/company/cognizant/",
+                website: "https://www.cognizant.com",
+                rating: 4.0,
+            },
+            {
+                name: "HCL Technologies",
+                shortName: "HCLTech",
+                emoji: "⚙️",
+                domain: "IT",
+                domainColor: "#6366f1",
+                type: "MNC",
+                typeColor: "#4f46e5",
+                founded: "1976",
+                hq: "Noida, India",
+                description: "A next-generation global technology company that helps enterprises reimagine their businesses for the digital age. Offers a broad range of tech services including IT and business services, engineering and R&D, cloud native services, and digital process operations.",
+                roles: ["Graduate Engineer Trainee", "Software Analyst", "System Architect"],
+                package: "₹3.5 – 9 LPA",
+                linkedin: "https://www.linkedin.com/company/hcl-technologies/",
+                website: "https://www.hcltech.com",
+                rating: 3.9,
+            },
+            {
+                name: "Accenture",
+                shortName: "Accenture",
+                emoji: "🔺",
+                domain: "Consulting",
+                domainColor: "#06b6d4",
+                type: "MNC",
+                typeColor: "#4f46e5",
+                founded: "1989",
+                hq: "Dublin, Ireland",
+                description: "A global professional services company with leading capabilities in digital, cloud and security. Combines unmatched experience and specialized skills across more than 40 industries, offering services in strategy, consulting, technology, and operations.",
+                roles: ["Application Developer", "Analyst", "Technology Consultant"],
+                package: "₹4.5 – 12 LPA",
+                linkedin: "https://www.linkedin.com/company/accenture/",
+                website: "https://www.accenture.com",
+                rating: 4.1,
+            },
+            {
+                name: "Amazon India",
+                shortName: "Amazon",
+                emoji: "📦",
+                domain: "Product",
+                domainColor: "#f59e0b",
+                type: "Big Tech",
+                typeColor: "#d97706",
+                founded: "1994",
+                hq: "Seattle, USA (India: Bengaluru)",
+                description: "Amazon is guided by four principles: customer obsession, passion for invention, commitment to operational excellence, and long-term thinking. Amazon is home to some of the world's most innovative businesses including Amazon.com, AWS, Alexa, Prime, and Kindle.",
+                roles: ["SDE-I", "Software Development Engineer", "Systems Development Engineer"],
+                package: "₹18 – 40 LPA",
+                linkedin: "https://www.linkedin.com/company/amazon/",
+                website: "https://www.amazon.jobs",
+                rating: 4.3,
+            },
+            {
+                name: "Deloitte India",
+                shortName: "Deloitte",
+                emoji: "🟢",
+                domain: "Consulting",
+                domainColor: "#06b6d4",
+                type: "Big 4",
+                typeColor: "#059669",
+                founded: "1845",
+                hq: "London, UK (India: Mumbai)",
+                description: "Deloitte provides audit and assurance, consulting, financial advisory, risk advisory and tax-related services to clients. Deloitte Consulting in India helps organizations solve complex business problems and transform the way they operate.",
+                roles: ["Business Technology Analyst", "Consultant", "Risk Advisory Analyst"],
+                package: "₹6 – 18 LPA",
+                linkedin: "https://www.linkedin.com/company/deloitte/",
+                website: "https://www2.deloitte.com/in",
+                rating: 4.2,
+            },
+            {
+                name: "HDFC Bank",
+                shortName: "HDFC",
+                emoji: "🏦",
+                domain: "Finance",
+                domainColor: "#10b981",
+                type: "BFSI",
+                typeColor: "#059669",
+                founded: "1994",
+                hq: "Mumbai, India",
+                description: "India's largest private sector bank by assets. HDFC Bank offers a wide range of banking services covering commercial and investment banking, transactional banking, branch banking and treasury operations. Renowned for technology-driven banking innovations.",
+                roles: ["Credit Analyst", "Relationship Manager", "Financial Analyst", "Tech Associate"],
+                package: "₹4 – 10 LPA",
+                linkedin: "https://www.linkedin.com/company/hdfc-bank/",
+                website: "https://www.hdfcbank.com",
+                rating: 4.0,
+            },
+            {
+                name: "Fractal Analytics",
+                shortName: "Fractal",
+                emoji: "📊",
+                domain: "Analytics",
+                domainColor: "#8b5cf6",
+                type: "Analytics",
+                typeColor: "#7c3aed",
+                founded: "2000",
+                hq: "Mumbai, India",
+                description: "A leading provider of Artificial Intelligence to Fortune 500 companies. Fractal's vision is to power every human decision in the enterprise. Fractal's businesses include Cuddle.ai, Qure.ai, Theremin, and more.",
+                roles: ["Data Analyst", "Data Scientist", "ML Engineer", "Business Intelligence Analyst"],
+                package: "₹6 – 18 LPA",
+                linkedin: "https://www.linkedin.com/company/fractal-analytics/",
+                website: "https://fractal.ai",
+                rating: 4.3,
+            },
+            {
+                name: "Larsen & Toubro",
+                shortName: "L&T",
+                emoji: "🏗️",
+                domain: "Manufacturing",
+                domainColor: "#ef4444",
+                type: "Conglomerate",
+                typeColor: "#dc2626",
+                founded: "1938",
+                hq: "Mumbai, India",
+                description: "A major Indian multinational conglomerate, with business interests in engineering, construction, manufacturing, technology, and financial services. L&T is regarded as a crown jewel of Indian engineering — known for iconic infrastructure projects across 30+ countries.",
+                roles: ["Graduate Engineer Trainee", "Software Engineer", "Project Associate"],
+                package: "₹4 – 9 LPA",
+                linkedin: "https://www.linkedin.com/company/larsen-&-toubro/",
+                website: "https://www.larsentoubro.com",
+                rating: 4.0,
+            },
+            {
+                name: "KPMG India",
+                shortName: "KPMG",
+                emoji: "🔵",
+                domain: "Consulting",
+                domainColor: "#06b6d4",
+                type: "Big 4",
+                typeColor: "#059669",
+                founded: "1987",
+                hq: "Global (India: Mumbai)",
+                description: "KPMG is a global organization of independent professional services firms providing audit, tax and advisory services. KPMG India's technology advisory team helps enterprises adopt digital transformation, AI, and cybersecurity at scale.",
+                roles: ["Technology Analyst", "Management Consultant", "Risk Analyst"],
+                package: "₹7 – 20 LPA",
+                linkedin: "https://www.linkedin.com/company/kpmg/",
+                website: "https://kpmg.com/in",
+                rating: 4.1,
+            },
+        ];
+
+        let activeDomain = 'all';
+
+        function renderCompanies(companies) {
+            const grid = document.getElementById('companiesGrid');
+            const noResults = document.getElementById('noResults');
+            if (!companies.length) { grid.innerHTML = ''; noResults.classList.remove('hidden'); return; }
+            noResults.classList.add('hidden');
+            grid.innerHTML = companies.map(c => `
+            <div class="col-md-6 col-xl-4 company-item" data-domain="${c.domain}">
+                <div class="company-card h-100">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="company-logo-placeholder">${c.emoji}</div>
+                        <div class="flex-grow-1">
+                            <h5 style="color:var(--text-primary); margin-bottom:4px;">${c.name}</h5>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <span class="company-domain" style="background:rgba(99,102,241,0.12); color:${c.domainColor}; border:1px solid rgba(99,102,241,0.2);">${c.domain}</span>
+                                <span class="company-domain" style="background:rgba(16,185,129,0.1); color:#34d399; border:1px solid rgba(16,185,129,0.2);">${c.type}</span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div style="font-family:'Outfit',sans-serif; font-size:1rem; font-weight:700; color:#fbbf24;">
+                                ⭐ ${c.rating}
+                            </div>
+                        </div>
+                    </div>
+
+                    <p style="color:var(--text-secondary); font-size:0.88rem; line-height:1.65; margin-bottom:14px;">${c.description}</p>
+
+                    <div class="mb-3">
+                        <small style="color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Hiring For</small>
+                        <div class="mt-1 d-flex flex-wrap gap-1">
+                            ${c.roles.map(r => `<span class="skill-tag" style="font-size:0.75rem;">${r}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3" style="font-size:0.84rem;">
+                        <span style="color:var(--text-muted);"><i class="fas fa-map-marker-alt me-1"></i>${c.hq}</span>
+                        <span style="color:#34d399; font-weight:600;"><i class="fas fa-money-bill-wave me-1"></i>${c.package}</span>
+                    </div>
+
+                    <div class="company-links">
+                        <a href="${c.linkedin}" target="_blank" class="company-link-btn linkedin">
+                            <i class="fab fa-linkedin"></i> LinkedIn
+                        </a>
+                        <a href="${c.website}" target="_blank" class="company-link-btn website">
+                            <i class="fas fa-globe"></i> Website
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        }
+
+        function filterCompanies() {
+            const query = document.getElementById('companySearch').value.toLowerCase().trim();
+            let filtered = COMPANIES;
+            if (activeDomain !== 'all') filtered = filtered.filter(c => c.domain === activeDomain);
+            if (query) filtered = filtered.filter(c =>
+                c.name.toLowerCase().includes(query) ||
+                c.domain.toLowerCase().includes(query) ||
+                c.type.toLowerCase().includes(query) ||
+                c.roles.some(r => r.toLowerCase().includes(query))
+            );
+            renderCompanies(filtered);
+        }
+
+        function filterByDomain(domain, btn) {
+            activeDomain = domain;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterCompanies();
+        }
+
+        renderCompanies(COMPANIES);
+    </script>
+</body>
+
+</html>
